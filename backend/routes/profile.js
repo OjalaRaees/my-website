@@ -1,0 +1,75 @@
+const express = require("express");
+const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
+const User = require("../models/User");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+// Ensure uploads/profile exists
+const profileDir = "uploads/profile";
+if (!fs.existsSync(profileDir)) fs.mkdirSync(profileDir, { recursive: true });
+
+// Multer storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, profileDir),
+
+  filename: (req, file, cb) =>
+    cb(null, req.user.id + path.extname(file.originalname)),
+});
+const upload = multer({ storage });
+
+// GET profile
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({
+      name: user.name,
+      email: user.email,
+      description: user.description || "",
+      profilePic: user.profilePic || "",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// UPDATE profile info
+router.put("/", authMiddleware, async (req, res) => {
+  const { name, description } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { name, description },
+      { new: true }
+    );
+    res.json({
+      name: user.name,
+      description: user.description,
+      profilePic: user.profilePic || "",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// UPDATE profile picture
+router.put("/pic", authMiddleware, upload.single("image"), async (req, res) => {
+  if (!req.file) return res.status(400).json({ message: "No image uploaded" });
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { profilePic: `/uploads/profile/${req.file.filename}` },
+      { new: true }
+    );
+    res.json({ profilePic: user.profilePic });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+module.exports = router;

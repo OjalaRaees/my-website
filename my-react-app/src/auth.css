@@ -1,0 +1,175 @@
+/* Background */
+
+.auth-container,
+.landing-container{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+
+background: linear-gradient(
+135deg,
+#c3ecf7,
+#f5d0ff,
+#d8f3dc
+);
+
+background-size:400% 400%;
+animation: gradientMove 10s ease infinite;
+}
+
+/* Gradient animation */
+
+@keyframes gradientMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* Card */
+
+.auth-card,
+.landing-card{
+
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(12px);
+
+padding:40px;
+
+border-radius:20px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.1);
+
+width:350px;
+
+text-align:center;
+
+animation: floatCard 3s ease-in-out infinite;
+}
+
+/* floating animation */
+
+@keyframes floatCard{
+0%{transform:translateY(0px)}
+50%{transform:translateY(-10px)}
+100%{transform:translateY(0px)}
+}
+
+/* title */
+
+.auth-title{
+font-weight:600;
+margin-bottom:25px;
+}
+
+/* inputs */
+
+.auth-input{
+
+width:100%;
+padding:12px;
+margin-bottom:15px;
+
+border-radius:10px;
+border:1px solid #ddd;
+
+outline:none;
+
+transition:0.3s;
+}
+
+.auth-input:focus{
+
+border-color:#8a7dff;
+
+box-shadow:0 0 8px rgba(138,125,255,0.4);
+
+}
+
+/* button */
+
+.auth-btn{
+
+width:100%;
+padding:12px;
+
+border:none;
+
+border-radius:10px;
+
+background:linear-gradient(135deg,#7f5af0,#5f9cff);
+
+color:white;
+
+font-weight:600;
+
+transition:0.3s;
+}
+
+.auth-btn:hover{
+
+transform:translateY(-2px);
+
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* landing */
+
+.logo{
+
+font-size:40px;
+font-weight:700;
+
+margin-bottom:10px;
+}
+
+.tagline{
+
+margin-bottom:30px;
+color:#555;
+}
+
+/* buttons */
+
+.btn-group{
+display:flex;
+gap:15px;
+justify-content:center;
+}
+
+.btn-main{
+
+padding:10px 20px;
+border-radius:10px;
+background:#7f5af0;
+color:white;
+text-decoration:none;
+transition:0.3s;
+}
+
+.btn-main:hover{
+background:#5f9cff;
+}
+
+.btn-outline{
+
+padding:10px 20px;
+
+border-radius:10px;
+
+border:2px solid #7f5af0;
+
+text-decoration:none;
+
+color:#7f5af0;
+
+transition:0.3s;
+}
+
+.btn-outline:hover{
+
+background:#7f5af0;
+
+color:white;
+}
