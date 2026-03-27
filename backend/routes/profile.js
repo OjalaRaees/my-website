@@ -6,14 +6,23 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Ensure uploads/profile exists
-const profileDir = "uploads/profile";
-if (!fs.existsSync(profileDir)) fs.mkdirSync(profileDir, { recursive: true });
+// FIX: Check if we are running on Vercel (Production)
+const isVercel = process.env.VERCEL === '1';
 
-// Multer storage
+// Ensure uploads/profile exists ONLY if not on Vercel
+const profileDir = "/tmp/profile"; // Use /tmp for temporary storage on serverless
+if (!isVercel) {
+    const localDir = "uploads/profile";
+    if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
+}
+
+// Multer storage - Using /tmp for Vercel compatibility
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, profileDir),
-
+  destination: (req, file, cb) => {
+    // Vercel only allows writing to the /tmp folder
+    const dest = isVercel ? "/tmp" : "uploads/profile";
+    cb(null, dest);
+  },
   filename: (req, file, cb) =>
     cb(null, req.user.id + path.extname(file.originalname)),
 });
@@ -60,6 +69,7 @@ router.put("/", authMiddleware, async (req, res) => {
 router.put("/pic", authMiddleware, upload.single("image"), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: "No image uploaded" });
   try {
+    // Note: This URL will only work temporarily on Vercel
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { profilePic: `/uploads/profile/${req.file.filename}` },
@@ -73,3 +83,4 @@ router.put("/pic", authMiddleware, upload.single("image"), async (req, res) => {
 });
 
 module.exports = router;
+
